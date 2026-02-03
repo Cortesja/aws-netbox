@@ -2,6 +2,7 @@
 get-cred.sh
 *.env
 .env*
+.envrc
 .env.*
 secrets/
 *.key
