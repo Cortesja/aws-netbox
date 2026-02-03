@@ -1,0 +1,7 @@
+.env
+get-cred.sh
+*.env
+.env.*
+secrets/
+*.key
+*.pem
