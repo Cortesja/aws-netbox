@@ -55,7 +55,7 @@ resource "aws_ecs_task_definition" "netbox" {
         { name = "REDIS_PORT",          value = tostring(aws_elasticache_cluster.redis.port) },
         { name = "REDIS_SSL",           value = "false" },
         { name = "SUPERUSER_NAME",      value = "admin" },
-        { name = "SUPERUSER_PASSWORD",  value = "1234adminPass" } # This password does not work after start up, Thinking it get overwritten somewhere during initialization.
+        { name = "SUPERUSER_PASSWORD",  value = "SuperSecretPaSSword0123" } # This password does not work after start up, Thinking it get overwritten somewhere during initialization.
       ]
 
       secrets = [
