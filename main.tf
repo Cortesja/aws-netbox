@@ -19,6 +19,11 @@ data "aws_iam_role" "ecsTaskExecutionRole" {
   name = "ecsTaskExecutionRole"
 }
 
+data "aws_ecr_image" "netbox-plugins" {
+  repostitory_name    = "netbox-test-environment"
+  image_tag           = "latest"
+}
+
 #################
 # VPC
 #################

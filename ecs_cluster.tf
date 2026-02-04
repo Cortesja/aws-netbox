@@ -68,7 +68,7 @@ resource "aws_ecs_task_definition" "netbox" {
           valueFrom = "${aws_secretsmanager_secret.django_secret.arn}:password::"
         }
       ]
-      # This activates
+      # This activates the cloud watch logs. turn off when it works to avoid extra costs.
       logConfiguration = {
         logDriver = "awslogs"
         options = { 
@@ -91,10 +91,11 @@ resource "aws_ecs_service" "netbox" {
   task_definition = aws_ecs_task_definition.netbox.arn
   desired_count   = 1
   launch_type     = "FARGATE"
-  enable_execute_command = true
+  enable_execute_command = true # Need to exec into the container to change password
 
   health_check_grace_period_seconds = 300
 
+  # Allow smoother updates with terraform apply
   force_new_deployment = true
 
   network_configuration {

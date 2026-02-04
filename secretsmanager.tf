@@ -48,5 +48,5 @@ locals {
   # Django session django_secret, username + password, jsonenconded.
   django_creds = jsondecode(aws_secretsmanager_secret_version.django_secret.secret_string)
   # netbox-version
-  nb_image = "docker.io/netboxcommunity/netbox:v4.3-3.3.0"
+  nb_image = data.aws_ecr_image.netbox-plugins.image_uri
 }
