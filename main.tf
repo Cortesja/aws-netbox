@@ -20,7 +20,7 @@ data "aws_iam_role" "ecsTaskExecutionRole" {
 }
 
 data "aws_ecr_image" "netbox-plugins" {
-  repostitory_name    = "netbox-test-environment"
+  repository_name    = "netbox-test-environment"
   image_tag           = "latest"
 }
 

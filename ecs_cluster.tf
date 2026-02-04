@@ -3,7 +3,7 @@
 ###################
 
 resource "aws_ecs_cluster" "netbox" {
-  name = "netbox-cluster1"
+  name = "netbox-cluster"
 }
 
 ###################
