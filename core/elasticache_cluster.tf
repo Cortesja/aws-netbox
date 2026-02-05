@@ -7,10 +7,7 @@
 
 resource "aws_elasticache_subnet_group" "netbox" {
   name        = "netbox-redis-subnets"
-  subnet_ids = [
-    aws_subnet.private_1.id,
-    aws_subnet.private_2.id
-  ]
+  subnet_ids = aws_subnet.private[*].id
 }
 
 ################

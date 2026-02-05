@@ -31,21 +31,21 @@ resource "aws_route_table" "private" {
 #####################
 
 resource "aws_route_table_association" "public_1" {
-  subnet_id       = aws_subnet.public_1.id
+  subnet_id       = aws_subnet.public[0].id
   route_table_id  = aws_route_table.public.id
 }
 
 resource "aws_route_table_association" "public_2" {
-  subnet_id       = aws_subnet.public_2.id
+  subnet_id       = aws_subnet.public[1].id
   route_table_id  = aws_route_table.public.id
 }
 
 resource "aws_route_table_association" "private_1" {
-  subnet_id       = aws_subnet.private_1.id
+  subnet_id       = aws_subnet.private[0].id
   route_table_id  = aws_route_table.private.id
 }
 
 resource "aws_route_table_association" "private_2" {
-  subnet_id       = aws_subnet.private_2.id
+  subnet_id       = aws_subnet.private[1].id
   route_table_id  = aws_route_table.private.id
 }
