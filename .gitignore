@@ -7,3 +7,11 @@ get-cred.sh
 secrets/
 *.key
 *.pem
+
+# Terraform
+terraform.tfstate
+terraform.tfstate.backup
+terraform.tfstate.bak
+*.tfstate
+*.tfstate.backup
+*.tfstate.bak
