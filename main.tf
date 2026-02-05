@@ -19,7 +19,7 @@ data "aws_iam_role" "ecsTaskExecutionRole" {
   name = "ecsTaskExecutionRole"
 }
 
-data "aws_ecr_image" "netbox-plugins" {
+data "aws_ecr_image" "netbox_plugins" {
   repository_name    = "netbox-test-environment"
   image_tag           = "latest"
 }
@@ -28,7 +28,7 @@ data "aws_ecr_image" "netbox-plugins" {
 # VPC
 #################
 
-resource "aws_vpc" "netbox-vpc" {
+resource "aws_vpc" "netbox_vpc" {
   cidr_block  = "10.253.0.0/16"
   enable_dns_hostnames  = true
   enable_dns_support    = true
@@ -40,29 +40,29 @@ resource "aws_vpc" "netbox-vpc" {
 # Subnets
 ################
 
-resource "aws_subnet" "private-1" {
-  vpc_id        = aws_vpc.netbox-vpc.id
+resource "aws_subnet" "private_1" {
+  vpc_id        = aws_vpc.netbox_vpc.id
   cidr_block    = "10.253.101.0/24"
 
   tags = { Name = "private-1" }
 }
 
-resource "aws_subnet" "private-2" {
-  vpc_id      = aws_vpc.netbox-vpc.id
+resource "aws_subnet" "private_2" {
+  vpc_id      = aws_vpc.netbox_vpc.id
   cidr_block  = "10.253.102.0/24"
 
   tags = { Name = "private-2" }
 }
 
-resource "aws_subnet" "public-1" {
-  vpc_id      = aws_vpc.netbox-vpc.id
+resource "aws_subnet" "public_1" {
+  vpc_id      = aws_vpc.netbox_vpc.id
   cidr_block  = "10.253.1.0/24"
 
   tags = { Name = "public-1" }
 }
 
-resource "aws_subnet" "public-2" {
-  vpc_id      = aws_vpc.netbox-vpc.id
+resource "aws_subnet" "public_2" {
+  vpc_id      = aws_vpc.netbox_vpc.id
   cidr_block  = "10.253.2.0/24"
 
   tags = { Name = "public-2" }
@@ -73,7 +73,7 @@ resource "aws_subnet" "public-2" {
 ###################
 
 resource "aws_internet_gateway" "igw" {
-  vpc_id    = aws_vpc.netbox-vpc.id
+  vpc_id    = aws_vpc.netbox_vpc.id
 
   tags = { Name = "netbox-igw" }
 }
@@ -94,7 +94,7 @@ resource "aws_eip" "nat" {
 
 resource "aws_nat_gateway" "ngw" {
   allocation_id     = aws_eip.nat.id
-  subnet_id         = aws_subnet.public-1.id
+  subnet_id         = aws_subnet.public_1.id
   connectivity_type = "public"
 
   tags = { Name = "netbox-ngw" }

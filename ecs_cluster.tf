@@ -1,3 +1,6 @@
+# Naming scheme for all aws ui display names use '-' (hyphen)
+# All terraform resource naming use '_' (underscore)
+
 ###################
 # ECS cluster
 ###################
@@ -45,17 +48,18 @@ resource "aws_ecs_task_definition" "netbox" {
 
       environment = [
         # Without this "HOME" line we get 'failed: could not open certificate file "/root/.postgresql/postgresql.crt": Permission denied.
+        # Cannot read certain file locations so we set HOME to a directory that can be accessed universally.
         { name = "HOME",                value = "/tmp" },
-        { name = "DB_HOST",             value = aws_db_instance.netbox-rds.address },
-        { name = "DB_PORT",             value = tostring(aws_db_instance.netbox-rds.port) },
+        { name = "DB_HOST",             value = aws_db_instance.netbox_rds.address },
+        { name = "DB_PORT",             value = tostring(aws_db_instance.netbox_rds.port) },
         { name = "DB_USER",             value = local.db_creds.username },
-        { name = "DB_NAME",             value = tostring(aws_db_instance.netbox-rds.db_name) },
+        { name = "DB_NAME",             value = tostring(aws_db_instance.netbox_rds.db_name) },
         { name = "DB_SSLMODE",          value = "require" },
         { name = "REDIS_HOST",          value = aws_elasticache_cluster.redis.cache_nodes[0].address },
         { name = "REDIS_PORT",          value = tostring(aws_elasticache_cluster.redis.port) },
         { name = "REDIS_SSL",           value = "false" },
-        { name = "SUPERUSER_NAME",      value = "admin" },
-        { name = "SUPERUSER_PASSWORD",  value = "SuperSecretPaSSword0123" } # aws ecs execute-command into the container and change the password. or use any other credential storing.
+        { name = "SUPERUSER_NAME",      value = local.superuser_creds.username },
+        { name = "SUPERUSER_PASSWORD",  value = local.superuser_creds.password } # aws ecs execute-command into the container and change the password. or use any other credential storing.
       ]
 
       secrets = [
@@ -100,12 +104,12 @@ resource "aws_ecs_service" "netbox" {
 
   network_configuration {
     assign_public_ip = false
-    security_groups = [aws_security_group.netbox-priv.id]
-    subnets = [aws_subnet.private-1.id, aws_subnet.private-2.id]
+    security_groups = [aws_security_group.netbox_internal.id]
+    subnets = [aws_subnet.private_1.id, aws_subnet.private_2.id]
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.netbox-target.arn
+    target_group_arn = aws_lb_target_group.netbox_target.arn
     container_name = "netbox"
     container_port  = 8080
   }
