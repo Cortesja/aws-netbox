@@ -1,13 +1,13 @@
+# Naming scheme for all aws ui display names use '-' (hyphen)
+# All terraform resource naming use '_' (underscore)
+
 ###############
 # Subnet group
 ###############
 
 resource "aws_elasticache_subnet_group" "netbox" {
   name        = "netbox-redis-subnets"
-  subnet_ids = [
-    aws_subnet.private-1.id,
-    aws_subnet.private-2.id
-  ]
+  subnet_ids = aws_subnet.private[*].id
 }
 
 ################
@@ -22,5 +22,9 @@ resource "aws_elasticache_cluster" "redis" {
   port                  = 6379
 
   subnet_group_name     = aws_elasticache_subnet_group.netbox.name
-  security_group_ids    = [aws_security_group.netbox-priv.id]
+  security_group_ids    = [aws_security_group.netbox_internal.id]
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }

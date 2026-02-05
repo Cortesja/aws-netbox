@@ -1,63 +1,63 @@
-# Security group name = "netbox-priv"
-resource "aws_security_group" "netbox-priv" {
+# Security group name = "netbox_internal"
+resource "aws_security_group" "netbox_internal" {
   name        = "netbox-sg"
   description = "netbox ALB + ECS + RDS + Redis"
-  vpc_id      = aws_vpc.netbox-vpc.id
+  vpc_id      = aws_vpc.netbox_vpc.id
 }
 
-resource "aws_security_group" "lb-traffic" {
-  name        = "ALB-Front-End"
+resource "aws_security_group" "lb_traffic" {
+  name        = "netbox-inbound-http"
   description = "allow internet traffic"
-  vpc_id      = aws_vpc.netbox-vpc.id
+  vpc_id      = aws_vpc.netbox_vpc.id
 }
 
 ############################
 # INGRESS
 ############################
 
-# ALB → NetBox
+# ALB -> NetBox
 resource "aws_vpc_security_group_ingress_rule" "http_8080" {
-  security_group_id            = aws_security_group.netbox-priv.id
-  referenced_security_group_id = aws_security_group.netbox-priv.id
+  security_group_id            = aws_security_group.netbox_internal.id
+  referenced_security_group_id = aws_security_group.netbox_internal.id
   ip_protocol                  = "tcp"
   from_port                    = 8080
   to_port                      = 8080
   description                  = "ALB to NetBox"
 }
 
-# ECS → PostgreSQL (RDS)
+# ECS -> PostgreSQL (RDS)
 resource "aws_vpc_security_group_ingress_rule" "postgres_5432" {
-  security_group_id            = aws_security_group.netbox-priv.id
-  referenced_security_group_id = aws_security_group.netbox-priv.id
+  security_group_id            = aws_security_group.netbox_internal.id
+  referenced_security_group_id = aws_security_group.netbox_internal.id
   ip_protocol                  = "tcp"
   from_port                    = 5432
   to_port                      = 5432
   description                  = "Postgres"
 }
 
-# ECS → Redis
+# ECS -> Redis
 resource "aws_vpc_security_group_ingress_rule" "redis_6379" {
-  security_group_id            = aws_security_group.netbox-priv.id
-  referenced_security_group_id = aws_security_group.netbox-priv.id
+  security_group_id            = aws_security_group.netbox_internal.id
+  referenced_security_group_id = aws_security_group.netbox_internal.id
   ip_protocol                  = "tcp"
   from_port                    = 6379
   to_port                      = 6379
   description                  = "Redis"
 }
 
-# ECS → HTTPS (ECR, AWS APIs, ALB health checks, etc)
+# ECS -> HTTPS (ECR, AWS APIs, ALB health checks, etc)
 resource "aws_vpc_security_group_ingress_rule" "https_443" {
-  security_group_id            = aws_security_group.netbox-priv.id
-  referenced_security_group_id = aws_security_group.netbox-priv.id
+  security_group_id            = aws_security_group.netbox_internal.id
+  referenced_security_group_id = aws_security_group.netbox_internal.id
   ip_protocol                  = "tcp"
   from_port                    = 443
   to_port                      = 443
   description                  = "HTTPS internal"
 }
 
-# Internet > ALB
-resource "aws_vpc_security_group_ingress_rule" "http_traffic" {
-  security_group_id         = aws_security_group.lb-traffic.id
+# Internet -> ALB
+resource "aws_vpc_security_group_ingress_rule" "http_80" {
+  security_group_id         = aws_security_group.lb_traffic.id
   cidr_ipv4                 = "0.0.0.0/0"
   ip_protocol               = "tcp"
   from_port                 = 80
@@ -70,8 +70,8 @@ resource "aws_vpc_security_group_ingress_rule" "http_traffic" {
 # EGRESS
 ############################
 
-resource "aws_vpc_security_group_egress_rule" "http" { 
-  security_group_id = aws_security_group.netbox-priv.id
+resource "aws_vpc_security_group_egress_rule" "http_80" { 
+  security_group_id = aws_security_group.netbox_internal.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "tcp"
   from_port         = 80
@@ -79,8 +79,8 @@ resource "aws_vpc_security_group_egress_rule" "http" {
   description       = "HTTP"
 }
 
-resource "aws_vpc_security_group_egress_rule" "https" { 
-  security_group_id = aws_security_group.netbox-priv.id
+resource "aws_vpc_security_group_egress_rule" "https_443" { 
+  security_group_id = aws_security_group.netbox_internal.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "tcp"
   from_port         = 443
@@ -89,17 +89,17 @@ resource "aws_vpc_security_group_egress_rule" "https" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "postgres_5432" { 
-  security_group_id             = aws_security_group.netbox-priv.id
-  referenced_security_group_id  = aws_security_group.netbox-priv.id
+  security_group_id             = aws_security_group.netbox_internal.id
+  referenced_security_group_id  = aws_security_group.netbox_internal.id
   ip_protocol                   = "tcp"
   from_port                     = 5432
   to_port                       = 5432
   description                   = "netbox to postgres"
 }
 
-resource "aws_vpc_security_group_egress_rule" "netbox_8080" {
-  security_group_id             = aws_security_group.netbox-priv.id
-  referenced_security_group_id  = aws_security_group.netbox-priv.id
+resource "aws_vpc_security_group_egress_rule" "http_8080" {
+  security_group_id             = aws_security_group.netbox_internal.id
+  referenced_security_group_id  = aws_security_group.netbox_internal.id
   ip_protocol                   = "tcp"
   from_port                     = 8080
   to_port                       = 8080
@@ -107,8 +107,8 @@ resource "aws_vpc_security_group_egress_rule" "netbox_8080" {
 }
 
 resource "aws_vpc_security_group_egress_rule" "redis_6379" {
-  security_group_id             = aws_security_group.netbox-priv.id
-  referenced_security_group_id  = aws_security_group.netbox-priv.id
+  security_group_id             = aws_security_group.netbox_internal.id
+  referenced_security_group_id  = aws_security_group.netbox_internal.id
   ip_protocol                   = "tcp"
   from_port                     = 6379
   to_port                       = 6379

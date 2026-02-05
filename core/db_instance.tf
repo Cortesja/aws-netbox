@@ -1,17 +1,15 @@
+# Naming scheme for all aws ui display names use '-' (hyphen)
+# All terraform resource naming use '_' (underscore)
+
 ######################
 # Subnet Group
 ######################
 
 resource "aws_db_subnet_group" "netbox" {
   name        = "netbox-db-subnets"
-  subnet_ids = [
-    aws_subnet.private-1.id,
-    aws_subnet.private-2.id
-  ]
+  subnet_ids  = aws_subnet.private[*].id
 
-  tags = {
-    Name = "netbox-db-subnets"
-  }
+  tags = { Name = "netbox-db-subnets" }
 }
 
 ###############
@@ -28,7 +26,8 @@ resource "aws_db_parameter_group" "force_ssl" {
   }
 }
 
-resource "aws_db_instance" "netbox-rds" {
+resource "aws_db_instance" "netbox_rds" {
+  identifier                  = "netbox-database"
   allocated_storage           = 20
   db_name                     = "netboxdb"
   engine                      = "postgres"
@@ -42,6 +41,10 @@ resource "aws_db_instance" "netbox-rds" {
   skip_final_snapshot         = true
 
   db_subnet_group_name        = aws_db_subnet_group.netbox.name
-  vpc_security_group_ids      = [aws_security_group.netbox-priv.id]
+  vpc_security_group_ids      = [aws_security_group.netbox_internal.id]
   parameter_group_name        = aws_db_parameter_group.force_ssl.name
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
