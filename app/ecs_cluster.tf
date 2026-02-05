@@ -50,26 +50,33 @@ resource "aws_ecs_task_definition" "netbox" {
         # Without this "HOME" line we get 'failed: could not open certificate file "/root/.postgresql/postgresql.crt": Permission denied.
         # Cannot read certain file locations so we set HOME to a directory that can be accessed universally.
         { name = "HOME",                value = "/tmp" },
-        { name = "DB_HOST",             value = aws_db_instance.netbox_rds.address },
-        { name = "DB_PORT",             value = tostring(aws_db_instance.netbox_rds.port) },
-        { name = "DB_USER",             value = local.db_creds.username },
-        { name = "DB_NAME",             value = tostring(aws_db_instance.netbox_rds.db_name) },
+        { name = "DB_HOST",             value = data.terraform_remote_state.core.outputs.db_host },
+        { name = "DB_PORT",             value = tostring(data.terraform_remote_state.core.outputs.db_port) },
+        { name = "DB_USER",             value = data.terraform_remote_state.core.outputs.db_user },
+        { name = "DB_NAME",             value = tostring(data.terraform_remote_state.core.outputs.db_name) },
         { name = "DB_SSLMODE",          value = "require" },
-        { name = "REDIS_HOST",          value = aws_elasticache_cluster.redis.cache_nodes[0].address },
-        { name = "REDIS_PORT",          value = tostring(aws_elasticache_cluster.redis.port) },
-        { name = "REDIS_SSL",           value = "false" },
-        { name = "SUPERUSER_NAME",      value = local.superuser_creds.username },
-        { name = "SUPERUSER_PASSWORD",  value = local.superuser_creds.password } # aws ecs execute-command into the container and change the password. or use any other credential storing.
+        { name = "REDIS_HOST",          value = data.terraform_remote_state.core.outputs.redis_host },
+        { name = "REDIS_PORT",          value = tostring(data.terraform_remote_state.core.outputs.redis_port) },
+        { name = "REDIS_SSL",           value = "false" }
+ # aws ecs execute-command into the container and change the password. or use any other credential storing.
       ]
 
       secrets = [
+        { 
+          name      = "SUPERUSER_NAME"
+          valueFrom = "${data.terraform_remote_state.core.outputs.superuser_creds}:username::"
+        },
+        { 
+          name      = "SUPERUSER_PASSWORD"
+          valueFrom = "${data.terraform_remote_state.core.outputs.superuser_creds}:password::"
+        },
         {
           name      = "DB_PASSWORD"
-          valueFrom = "${aws_secretsmanager_secret.db_password.arn}:password::"
+          valueFrom = "${data.terraform_remote_state.core.outputs.database_passwd}:password::"
         },
         {
           name      = "SECRET_KEY"
-          valueFrom = "${aws_secretsmanager_secret.django_secret.arn}:password::"
+          valueFrom = "${data.terraform_remote_state.core.outputs.django_creds}:password::"
         }
       ]
       # This activates the cloud watch logs. turn off when it works to avoid extra costs.
@@ -104,8 +111,8 @@ resource "aws_ecs_service" "netbox" {
 
   network_configuration {
     assign_public_ip = false
-    security_groups = [aws_security_group.netbox_internal.id]
-    subnets = [aws_subnet.private_1.id, aws_subnet.private_2.id]
+    security_groups = [data.terraform_remote_state.core.outputs.sg]
+    subnets = data.terraform_remote_state.core.outputs.private_subnet_ids
   }
 
   load_balancer {

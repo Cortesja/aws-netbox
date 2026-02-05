@@ -9,8 +9,8 @@ resource "aws_lb" "netbox_lb" {
   name                = "netbox-alb"
   internal            = "false"
   load_balancer_type  = "application"
-  security_groups     = [aws_security_group.netbox-priv.id, aws_security_group.lb_traffic.id]
-  subnets             = [aws_subnet.public_1.id, aws_subnet.public_2.id] # public subnet
+  security_groups     = [data.terraform_remote_state.core.outputs.sg, data.terraform_remote_state.core.outputs.sg_alb]
+  subnets             = data.terraform_remote_state.core.outputs.public_subnet_ids
 }
 
 ###################
@@ -22,7 +22,7 @@ resource "aws_lb_target_group" "netbox_target" {
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
-  vpc_id      = aws_vpc.netbox_vpc.id
+  vpc_id      = data.terraform_remote_state.core.outputs.vpc
 
   health_check {
     path = "/"
