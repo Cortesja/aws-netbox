@@ -26,4 +26,8 @@ resource "aws_elasticache_cluster" "redis" {
 
   subnet_group_name     = aws_elasticache_subnet_group.netbox.name
   security_group_ids    = [aws_security_group.netbox_internal.id]
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }

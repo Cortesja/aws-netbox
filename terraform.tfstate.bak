@@ -1,14 +1,14 @@
 {
   "version": 4,
   "terraform_version": "1.14.4",
-  "serial": 416,
+  "serial": 414,
   "lineage": "e515b4fb-724e-632e-4ab4-6128ddc6dc16",
   "outputs": {},
   "resources": [
     {
       "mode": "data",
       "type": "aws_ecr_image",
-      "name": "netbox_plugins",
+      "name": "netbox-plugins",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
       "instances": [
         {
@@ -120,7 +120,7 @@
     {
       "mode": "managed",
       "type": "aws_db_instance",
-      "name": "netbox_rds",
+      "name": "netbox-rds",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
       "instances": [
         {
@@ -443,7 +443,27 @@
           },
           "sensitive_attributes": [],
           "identity_schema_version": 0,
-          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9"
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxMjAwMDAwMDAwMDAwLCJkZWxldGUiOjEyMDAwMDAwMDAwMDAsInVwZGF0ZSI6MTIwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "aws_db_instance.netbox-rds",
+            "aws_db_parameter_group.force_ssl",
+            "aws_db_subnet_group.netbox",
+            "aws_ecs_cluster.netbox",
+            "aws_ecs_task_definition.netbox",
+            "aws_elasticache_cluster.redis",
+            "aws_elasticache_subnet_group.netbox",
+            "aws_lb_target_group.netbox-target",
+            "aws_secretsmanager_secret.db_password",
+            "aws_secretsmanager_secret.django_secret",
+            "aws_secretsmanager_secret_version.db_password",
+            "aws_security_group.netbox-priv",
+            "aws_subnet.private-1",
+            "aws_subnet.private-2",
+            "aws_vpc.netbox-vpc",
+            "data.aws_ecr_image.netbox-plugins",
+            "data.aws_iam_role.ecsTaskExecutionRole",
+            "data.aws_secretsmanager_random_password.db_password"
+          ]
         }
       ]
     },
@@ -502,7 +522,24 @@
             ]
           ],
           "identity_schema_version": 0,
-          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ==",
+          "dependencies": [
+            "aws_db_instance.netbox-rds",
+            "aws_db_parameter_group.force_ssl",
+            "aws_db_subnet_group.netbox",
+            "aws_elasticache_cluster.redis",
+            "aws_elasticache_subnet_group.netbox",
+            "aws_secretsmanager_secret.db_password",
+            "aws_secretsmanager_secret.django_secret",
+            "aws_secretsmanager_secret_version.db_password",
+            "aws_security_group.netbox-priv",
+            "aws_subnet.private-1",
+            "aws_subnet.private-2",
+            "aws_vpc.netbox-vpc",
+            "data.aws_ecr_image.netbox-plugins",
+            "data.aws_iam_role.ecsTaskExecutionRole",
+            "data.aws_secretsmanager_random_password.db_password"
+          ]
         }
       ]
     },

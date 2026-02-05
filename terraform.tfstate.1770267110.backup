@@ -1,14 +1,14 @@
 {
   "version": 4,
   "terraform_version": "1.14.4",
-  "serial": 416,
+  "serial": 415,
   "lineage": "e515b4fb-724e-632e-4ab4-6128ddc6dc16",
   "outputs": {},
   "resources": [
     {
       "mode": "data",
       "type": "aws_ecr_image",
-      "name": "netbox_plugins",
+      "name": "netbox-plugins",
       "provider": "provider[\"registry.terraform.io/hashicorp/aws\"]",
       "instances": [
         {

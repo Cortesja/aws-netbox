@@ -47,5 +47,7 @@ resource "aws_db_instance" "netbox_rds" {
   vpc_security_group_ids      = [aws_security_group.netbox_internal.id]
   parameter_group_name        = aws_db_parameter_group.force_ssl.name
 
-  tags = { Name = netbox-postgresql-db }
+  lifecycle {
+    prevent_destroy = true
+  }
 }
