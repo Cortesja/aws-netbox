@@ -15,3 +15,6 @@ terraform.tfstate.bak
 *.tfstate
 *.tfstate.backup
 *.tfstate.bak
+.terraform
+.terraform/
+
