@@ -16,14 +16,9 @@ resource "aws_db_subnet_group" "netbox" {
 # Database ####
 ###############
 
-resource "aws_db_parameter_group" "force_ssl" {
-  name    = "rds"
-  family  = "postgres17"
-
-  parameter {
-    name    = "rds.force_ssl"
-    value   = "0"
-  }
+# Use existing parameter group to disable ssl
+data "aws_db_parameter_group" "db_parameter_group" {
+  name      = "disable-ssl-postgres17"
 }
 
 resource "aws_db_instance" "netbox_rds" {
@@ -42,9 +37,16 @@ resource "aws_db_instance" "netbox_rds" {
 
   db_subnet_group_name        = aws_db_subnet_group.netbox.name
   vpc_security_group_ids      = [aws_security_group.netbox_internal.id]
-  parameter_group_name        = aws_db_parameter_group.force_ssl.name
+  parameter_group_name        = data.aws_db_parameter_group.db_parameter_group.name
 
-  lifecycle {
-    prevent_destroy = true
-  }
+  ##################
+  # Backup settings
+  ##################
+
+  backup_retention_period     = 1
+  backup_window               = "13:00-14:00"
+  copy_tags_to_snapshot       = true
+  maintenance_window          = "Sun:00:00-Sun:03:00"
+
+  deletion_protection         = true
 }

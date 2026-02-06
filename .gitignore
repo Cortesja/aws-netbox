@@ -15,14 +15,9 @@ terraform.tfstate.bak
 *.tfstate
 *.tfstate.backup
 *.tfstate.bak
-.terraform
 .terraform/
-.terraform.lock.hcl
-app/.terraform.lock.hcl
 app/terraform.tfstate
 app/terraform.tfstate.backup
-app/terraform/*
-core/terraform/*
-core/.terraform.lock.hcl
 core/.terraform.tfstate
 core/terraform.tfstate.backup
+**/.terraform/
