@@ -43,7 +43,7 @@ resource "aws_db_instance" "netbox_rds" {
   # Backup settings
   ##################
 
-  backup_retention_period     = 1
+  backup_retention_period     = 7
   backup_window               = "13:00-14:00"
   copy_tags_to_snapshot       = true
   maintenance_window          = "Sun:00:00-Sun:03:00"
