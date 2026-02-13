@@ -25,6 +25,6 @@ resource "aws_elasticache_cluster" "redis" {
   security_group_ids    = [aws_security_group.netbox_internal.id]
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
   }
 }

@@ -28,6 +28,7 @@ output "db_port" {
 
 output "db_user" {
   value = local.db_creds.username
+  sensitive = true
 }
 
 output "db_name" {
@@ -43,15 +44,15 @@ output "redis_port" {
 }
 
 output "database_passwd" {
-  value = aws_secretsmanager_secret.database_passwd.arn
+  value = aws_secretsmanager_secret.datab_password.arn
 }
 
 output "django_creds" {
-  value = aws_secretsmanager_secret.django_secret_key.arn
+  value = aws_secretsmanager_secret.session_secret_key.arn
 }
 
 output "superuser_creds" {
-  value = aws_secretsmanager_secret.superuser_creds.arn
+  value = aws_secretsmanager_secret.admin_creds.arn
 }
 
 ###############################
@@ -64,4 +65,12 @@ output "sg" {
 
 output "private_subnet_ids" {
   value = aws_subnet.private[*].id
+}
+
+##############################
+# S3 Bucket
+##############################
+
+output "s3_media_name" {
+  value = aws_s3_bucket.netbox_media.bucket
 }

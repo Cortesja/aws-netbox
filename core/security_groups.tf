@@ -58,11 +58,11 @@ resource "aws_vpc_security_group_ingress_rule" "https_443" {
 # Internet -> ALB
 resource "aws_vpc_security_group_ingress_rule" "http_80" {
   security_group_id         = aws_security_group.lb_traffic.id
-  cidr_ipv4                 = "0.0.0.0/0"
+  cidr_ipv4                 = "118.238.29.185/32"
   ip_protocol               = "tcp"
-  from_port                 = 80
-  to_port                   = 80
-  description               = "HTTP from internet"
+  from_port                 = 443
+  to_port                   = 443
+  description               = "HTTPS from internet"
 }
 
 

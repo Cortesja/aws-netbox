@@ -19,9 +19,18 @@ data "aws_iam_role" "ecsTaskExecutionRole" {
   name = "ecsTaskExecutionRole"
 }
 
+data "aws_iam_role" "netboxTaskRole" {
+  name = "netboxTaskRole"
+}
+
 data "aws_ecr_image" "netbox_plugins" {
   repository_name    = "netbox-test-environment"
   image_tag           = "latest"
+}
+
+data "aws_acm_certificate" "netbox_dev" {
+  domain          = "netbox-dev.smp.ne.jp"
+  types           = [ "AMAZON_ISSUED" ]
 }
 
 #############

@@ -11,30 +11,41 @@ provider "aws" {
   region = "ap-northeast-1"
 }
 
-data "aws_availability_zones" "available" {
-  state = "available"
-}
-
-locals {
-  # AZs apply exactly 2 different zones to 'azs'
-  azs = slice(data.aws_availability_zones.available.names, 0 , 2)
-  # RDS postgesql DB credentials 
-  db_creds = jsondecode(aws_secretsmanager_secret_version.database_passwd.secret_string)
-  public_cidrs = ["10.253.1.0/24", "10.253.2.0/24"]
-  private_cidrs = ["10.253.101.0/24", "10.253.102.0/24"]
-}
-
 ###################
-# IAM Role declaration
+# Data Sources
 ###################
 
 data "aws_iam_role" "ecsTaskExecutionRole" {
   name = "ecsTaskExecutionRole"
 }
 
+data "aws_iam_role" "netboxTaskRole" {
+  name = "netboxTaskRole"
+}
+
 data "aws_ecr_image" "netbox_plugins" {
   repository_name    = "netbox-test-environment"
   image_tag           = "latest"
+}
+
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+data "aws_kms_key" "rds" {
+  key_id      = "alias/aws/rds"
+}
+
+data "aws_caller_identity" "current" {}
+
+locals {
+  # AZs apply exactly 2 different zones to 'azs'
+  azs = slice(data.aws_availability_zones.available.names, 0 , 2)
+  # RDS postgesql DB credentials 
+  db_creds = jsondecode(aws_secretsmanager_secret_version.datab_password.secret_string)
+  # Public and private subnet cidrs blocks
+  public_cidrs = ["10.253.1.0/24", "10.253.2.0/24"]
+  private_cidrs = ["10.253.101.0/24", "10.253.102.0/24"]
 }
 
 #################
@@ -103,3 +114,23 @@ resource "aws_nat_gateway" "ngw" {
   tags = { Name = "netbox-ngw" }
 }
 
+###################
+# S3 Bucket
+###################
+
+resource "aws_s3_bucket" "netbox_media" {
+  bucket        = "netbox-s3-media-bucketyal6hxjext8l8gh5s5i4ylsoaiqllrm5"
+  # Terraform destory will not result in error if this is set to true
+  force_destroy = true
+}
+
+# SSE settings
+resource "aws_s3_bucket_server_side_encryption_configuration" "sse" {
+  bucket = aws_s3_bucket.netbox_media.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm           = "AES256"
+    }
+  }
+}

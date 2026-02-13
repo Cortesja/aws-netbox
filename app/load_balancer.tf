@@ -25,8 +25,9 @@ resource "aws_lb_target_group" "netbox_target" {
   vpc_id      = data.terraform_remote_state.core.outputs.vpc
 
   health_check {
-    path = "/"
-    matcher = "200-399" # we need 204
+    path = "/login/"
+    matcher = "200" # we need 204
+    interval = 60
   }
 }
 
@@ -36,8 +37,10 @@ resource "aws_lb_target_group" "netbox_target" {
 
 resource "aws_lb_listener" "front_end" {
   load_balancer_arn       = aws_lb.netbox_lb.arn
-  port                    = 80
-  protocol                = "HTTP"
+  port                    = 443
+  protocol                = "HTTPS"
+  # ssl_policy            = # Default it ELBSecurityPolicy-2016-08
+  certificate_arn         = data.aws_acm_certificate.netbox_dev.arn
 
   default_action {
     type              = "forward"

@@ -2,7 +2,7 @@
 # Route table
 ###################
 
-# ALl public subnets > internet
+# All public subnets > internet
 resource "aws_route_table" "public" {
   vpc_id        = aws_vpc.netbox_vpc.id
 

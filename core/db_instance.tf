@@ -27,7 +27,7 @@ resource "aws_db_instance" "netbox_rds" {
   db_name                     = "netboxdb"
   engine                      = "postgres"
   engine_version              = "17"
-  instance_class              = "db.t3.micro"
+  instance_class              = "db.t4g.small"
   storage_type                = "gp3"
 
   username                    = local.db_creds.username
@@ -39,6 +39,9 @@ resource "aws_db_instance" "netbox_rds" {
   vpc_security_group_ids      = [aws_security_group.netbox_internal.id]
   parameter_group_name        = data.aws_db_parameter_group.db_parameter_group.name
 
+  ### Multi-zone
+  multi_az                    = true
+
   ##################
   # Backup settings
   ##################
@@ -48,5 +51,8 @@ resource "aws_db_instance" "netbox_rds" {
   copy_tags_to_snapshot       = true
   maintenance_window          = "Sun:00:00-Sun:03:00"
 
-  deletion_protection         = true
+  deletion_protection         = false
+
+  storage_encrypted           = true
+  kms_key_id                  = data.aws_kms_key.rds.arn
 }
